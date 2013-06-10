@@ -48,9 +48,10 @@ public class SimpleClient {
 	public void Connect() {
 		try {
 			clientSocket = new Socket(host,port);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
 			outObject = new ObjectOutputStream(clientSocket.getOutputStream());
-			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			outObject.flush();
 			inObject = new ObjectInputStream(clientSocket.getInputStream());
 		} catch (UnknownHostException e) {
 			System.out.println("Servidor nao encontrado.");
@@ -71,10 +72,7 @@ public class SimpleClient {
 	}
 	
 	public Object readObject() throws IOException, ClassNotFoundException {
-		if(inObject.available() > 0)
-			return inObject.readObject();
-		else
-			return null;
+		return inObject.readObject();
 	}
 	
 	public void sendCommand(String command)
@@ -103,6 +101,7 @@ public class SimpleClient {
 
 	public void close() {
 		try {
+			out.println("CLOSE");
 			clientSocket.shutdownOutput();
 			clientSocket.close();
 		} catch (IOException e) {

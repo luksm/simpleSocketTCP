@@ -1,28 +1,35 @@
 package cgt.bo;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import cdp.Cliente;
+import cdp.ItemPedido;
 import cdp.Pedido;
 
 import db.dao.BaseDAO;
 import db.dao.DAO;
 import db.dao.DAOException;
+import db.dao.PedidoDAO;
 import db.util.DBUtil;
 
 public class PedidoBO {
 	private SessionFactory sessionFactory;
-	private DAO<Pedido> dao;
+	private PedidoDAO dao;
 	
 	public PedidoBO() {
 		sessionFactory = DBUtil.getSessionFactory();
-		this.dao = new BaseDAO<Pedido>(Pedido.class);
+		this.dao = new PedidoDAO();
 	}
 
 	public PedidoBO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.dao = new BaseDAO<Pedido>(Pedido.class);
+		this.dao = new PedidoDAO();
 	}
 
 	public Session getCleanSession() {
@@ -59,6 +66,10 @@ public class PedidoBO {
 
 	public void delete(Pedido object) throws BOException {
 		try {
+			if(dao.pedidoProcessado(object))
+			{
+				throw new BOException("O pedido não pode ser EXCLUÍDO pois ele já foi processado!");
+			}
 			dao.delete(object);
 		} catch (DAOException e) {
 			e.printStackTrace();
@@ -74,10 +85,22 @@ public class PedidoBO {
 			throw new BOException(e);
 		}
 	}
-
-	public Pedido saveOrUpdate(Pedido object) throws BOException {
+	
+	public void Update(Pedido object) throws BOException {
 		try {
-			return dao.saveOrUpdate(object);
+			Pedido p = selectById(object.getId());
+			if(!p.getItens().equals(object))
+			{
+				if(dao.pedidoProcessado(object))
+				{
+					throw new BOException("Os itens do pedido não podem ser alterados pois ele já foi processado!");
+				}
+			}
+			if(!p.getCliente().equals(object.getCliente()))
+			{
+				throw new BOException("O cliente do pedido não pode ser alterado!");
+			}
+			dao.update(object);
 		} catch (DAOException e) {
 			e.printStackTrace();
 			throw new BOException(e);
@@ -96,6 +119,29 @@ public class PedidoBO {
 	public void update(Pedido object) throws BOException {
 		try {
 			dao.update(object);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+	
+	public ArrayList<Pedido> buscarPeloCliente(Cliente cliente) throws BOException
+	{
+		ArrayList<Pedido> pedidos = null;
+		try {
+			pedidos = dao.buscarPeloCliente(cliente);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+		return pedidos;
+	}
+	
+	public void processarPedido(Pedido p) throws BOException
+	{
+		try {
+			p.setDataProcessamento(Calendar.getInstance().getTime());
+			dao.save(p);
 		} catch (DAOException e) {
 			e.printStackTrace();
 			throw new BOException(e);

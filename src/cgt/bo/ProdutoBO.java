@@ -1,28 +1,32 @@
 package cgt.bo;
 
+import java.util.ArrayList;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import cdp.Cliente;
 import cdp.Produto;
 
 import db.dao.BaseDAO;
 import db.dao.DAO;
 import db.dao.DAOException;
+import db.dao.ProdutoDAO;
 import db.util.DBUtil;
 
 public class ProdutoBO {
 	private SessionFactory sessionFactory;
-	private DAO<Produto> dao;
+	private ProdutoDAO dao;
 	
 	public ProdutoBO() {
 		sessionFactory = DBUtil.getSessionFactory();
-		this.dao = new BaseDAO<Produto>(Produto.class);
+		this.dao = new ProdutoDAO();
 	}
 
 	public ProdutoBO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.dao = new BaseDAO<Produto>(Produto.class);
+		this.dao = new ProdutoDAO();
 	}
 
 	public Session getCleanSession() {
@@ -68,6 +72,7 @@ public class ProdutoBO {
 	
 	public void save(Produto object) throws BOException {
 		try {
+			if(object.getEstoque() < 10) throw new BOException("O estoque mínimo para cadastro é de 10 itens!");
 			dao.save(object);
 		} catch (DAOException e) {
 			e.printStackTrace();
@@ -100,5 +105,10 @@ public class ProdutoBO {
 			e.printStackTrace();
 			throw new BOException(e);
 		}
+	}
+	
+	public ArrayList<Produto> buscarPelaDescricao(String descricao)
+	{
+		return dao.buscarPelaDescricao(descricao);
 	}
 }

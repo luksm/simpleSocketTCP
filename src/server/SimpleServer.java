@@ -111,8 +111,9 @@ public class SimpleServer {
 			in = new BufferedReader(new InputStreamReader(clientSocket
 					.getInputStream()));
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
-			inObject = new ObjectInputStream(clientSocket.getInputStream());
 			outObject = new ObjectOutputStream(clientSocket.getOutputStream());
+			outObject.flush();
+			inObject = new ObjectInputStream(clientSocket.getInputStream());
 			do {
 				if (in.ready()) {
 					command = in.readLine();
@@ -145,7 +146,7 @@ public class SimpleServer {
 					}
 					catch(Exception e)
 					{
-						System.out.println(e.getMessage());
+						out.println(e.getMessage());
 					}
 				}
 			} while (!command.equalsIgnoreCase("CLOSE"));

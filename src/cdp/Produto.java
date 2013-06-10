@@ -2,6 +2,8 @@ package cdp;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Produto implements Serializable {
 
@@ -76,5 +78,11 @@ public class Produto implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return id + "\t" + descricao + "\t\t\t\t" + preco + "\t\t" + estoque;
 	}
 }

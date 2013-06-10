@@ -9,11 +9,11 @@
 		<property name="dataEmissao" column="data_emissao" not-null="false" />
 		<property name="dataProcessamento" column="data_proc" not-null="false" />
 		<property name="totalPedido" column="total_ped" not-null="false" />
-		<many-to-one name="cliente" class="cdp.Cliente" column="id_cliente"
+		<many-to-one name="cliente" class="cdp.Cliente" update="false" insert="false" column="id_cliente"
 			cascade="all" not-null="true"></many-to-one>
 		<set name="itens" inverse="true" cascade="all">
 			<key column="id_pedido" />
-			<one-to-many class="cdp.ItemPedido" />
+			<one-to-many class="cdp.ItemPedido" inverse="true" />
 		</set>
 	</class>
 </hibernate-mapping>

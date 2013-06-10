@@ -1,28 +1,29 @@
 package cgt.bo;
 
+import java.util.ArrayList;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import cdp.Cliente;
 
-import db.dao.BaseDAO;
-import db.dao.DAO;
+import db.dao.ClienteDAO;
 import db.dao.DAOException;
 import db.util.DBUtil;
 
 public class ClienteBO {
 	private SessionFactory sessionFactory;
-	private DAO<Cliente> dao;
+	private ClienteDAO dao;
 	
 	public ClienteBO() {
 		sessionFactory = DBUtil.getSessionFactory();
-		this.dao = new BaseDAO<Cliente>(Cliente.class);
+		this.dao = new ClienteDAO();
 	}
-
+	
 	public ClienteBO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.dao = new BaseDAO<Cliente>(Cliente.class);
+		this.dao = new ClienteDAO();
 	}
 
 	public Session getCleanSession() {
@@ -68,16 +69,10 @@ public class ClienteBO {
 	
 	public void save(Cliente object) throws BOException {
 		try {
+			ArrayList<Cliente> clientes = buscarPeloCpf(object.getCpf());
+			//valida se já existe um cliente com o cpf informado
+			if(clientes.size() > 0) throw new BOException("Já existe um cliente com este CPF!");
 			dao.save(object);
-		} catch (DAOException e) {
-			e.printStackTrace();
-			throw new BOException(e);
-		}
-	}
-
-	public Cliente saveOrUpdate(Cliente object) throws BOException {
-		try {
-			return dao.saveOrUpdate(object);
 		} catch (DAOException e) {
 			e.printStackTrace();
 			throw new BOException(e);
@@ -95,10 +90,23 @@ public class ClienteBO {
 
 	public void update(Cliente object) throws BOException {
 		try {
+			ArrayList<Cliente> clientes = buscarPeloCpf(object.getCpf());
+			//valida se já existe um cliente com o cpf informado
+			if(clientes.size() > 0) throw new BOException("Já existe um cliente com este CPF!");
 			dao.update(object);
 		} catch (DAOException e) {
 			e.printStackTrace();
 			throw new BOException(e);
 		}
+	}
+	
+	public ArrayList<Cliente> buscarPeloNome(String nome)
+	{
+		return dao.buscarPeloNome(nome);
+	}
+	
+	public ArrayList<Cliente> buscarPeloCpf(String cpf)
+	{
+		return dao.buscarPeloCpf(cpf);
 	}
 }

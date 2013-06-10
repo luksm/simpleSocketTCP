@@ -60,4 +60,10 @@ public class Cliente implements Serializable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return id + "\t" + nome + "\t\t\t" + cpf;
+	}
 }
