@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="cdp.Cliente" table="tb_cliente">
+		<id name="id" column="id_cliente">
+			<generator class="increment" />
+		</id>
+		<property name="nome" column="nome_cliente" not-null="false" />
+		<property name="cpf" column="cpf_cliente" not-null="false" unique="true" />
+	</class>
+</hibernate-mapping>

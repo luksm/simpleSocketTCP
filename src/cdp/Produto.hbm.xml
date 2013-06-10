@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="cdp.Produto" table="tb_produto">
+		<id name="id" column="id_prod">
+			<generator class="increment" />
+		</id>
+		<property name="descricao" column="descricao_prod" not-null="true" />
+		<property name="preco" column="preco_prod" not-null="false" />
+		<property name="estoque" column="estoque_prod" not-null="false" />
+	</class>
+</hibernate-mapping>

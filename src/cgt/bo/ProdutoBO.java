@@ -1,0 +1,104 @@
+package cgt.bo;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import cdp.Produto;
+
+import db.dao.BaseDAO;
+import db.dao.DAO;
+import db.dao.DAOException;
+import db.util.DBUtil;
+
+public class ProdutoBO {
+	private SessionFactory sessionFactory;
+	private DAO<Produto> dao;
+	
+	public ProdutoBO() {
+		sessionFactory = DBUtil.getSessionFactory();
+		this.dao = new BaseDAO<Produto>(Produto.class);
+	}
+
+	public ProdutoBO(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+		this.dao = new BaseDAO<Produto>(Produto.class);
+	}
+
+	public Session getCleanSession() {
+		Session session = sessionFactory.getCurrentSession();
+		if (!session.isOpen())
+			session = sessionFactory.openSession();
+		return session;
+	}
+
+	public void beginTransaction() throws BOException {
+		try {
+			getCleanSession().beginTransaction();
+		} catch (HibernateException e) {
+			throw new BOException(e);
+		}
+	}
+
+	public void commit() throws BOException {
+		try {
+			sessionFactory.getCurrentSession().flush();
+			sessionFactory.getCurrentSession().getTransaction().commit();
+		} catch (HibernateException e) {
+			throw new BOException(e);
+		}
+	}
+
+	public void rollback() throws BOException {
+		try {
+			sessionFactory.getCurrentSession().getTransaction().rollback();
+		} catch (HibernateException e) {
+			throw new BOException(e);
+		}
+	}
+
+	public void delete(Produto object) throws BOException {
+		try {
+			dao.delete(object);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+	
+	public void save(Produto object) throws BOException {
+		try {
+			dao.save(object);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+
+	public Produto saveOrUpdate(Produto object) throws BOException {
+		try {
+			return dao.saveOrUpdate(object);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+
+	public Produto selectById(long id) throws BOException {
+		try {
+			return dao.selectById(id);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+
+	public void update(Produto object) throws BOException {
+		try {
+			dao.update(object);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new BOException(e);
+		}
+	}
+}

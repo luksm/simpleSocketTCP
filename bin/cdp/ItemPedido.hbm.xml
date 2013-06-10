@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="cdp.ItemPedido" table="tb_item_pedido">
+		<composite-id name="id" class="cdp.ItemPedidoPK">
+			<key-many-to-one name="pedido"  class="cdp.Pedido"  column="id_pedido" />
+			<key-many-to-one name="produto" class="cdp.Produto" column="id_produto" />			
+		</composite-id>
+		<many-to-one name="produto" column="id_produto" insert="false" 
+			update="false" not-null="true" />
+		<many-to-one name="pedido" column="id_pedido" insert="false" 
+			update="false" not-null="true" />
+		<property name="quantidade" column="quantidade_item" />
+		<property name="precoUnitario" column="preco_item" />
+		<property name="desconto" column="desconto_item" />
+	</class>
+</hibernate-mapping>
