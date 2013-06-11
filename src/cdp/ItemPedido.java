@@ -1,8 +1,9 @@
 package cdp;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ItemPedido {
+public class ItemPedido implements Serializable {
 	private ItemPedidoPK id;
 	private Pedido pedido;
 	private Produto produto;
@@ -17,7 +18,6 @@ public class ItemPedido {
 	public void setId(ItemPedidoPK id) {
 		this.id = id;
 	}
-	
 	
 	private transient BigDecimal totalDoItem;
 	

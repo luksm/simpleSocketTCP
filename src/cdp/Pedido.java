@@ -13,7 +13,7 @@ public class Pedido implements Serializable {
 	private Date dataProcessamento;
 	private BigDecimal totalPedido;
 	private Cliente cliente;
-	private Set<ItemPedido> itens = new HashSet<ItemPedido>();
+	private Set<ItemPedido> itens = null;
 	public Long getId() {
 		return id;
 	}
@@ -50,6 +50,23 @@ public class Pedido implements Serializable {
 	public void setItens(Set<ItemPedido> itens) {
 		this.itens = itens;
 	}
+	public void addItem(ItemPedido item) {
+		if(itens == null)
+			this.itens = new HashSet<ItemPedido>();
+		item.setPedido(this);
+		itens.add(item);
+	}
+	
+	public void calcularTotalPedido()
+	{
+		if(itens == null) return;
+		totalPedido = new BigDecimal(0);
+		for(ItemPedido ip : itens)
+		{
+			totalPedido = ip.getTotalItem().multiply(new BigDecimal(ip.getQuantidade())).add(totalPedido);
+		}
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

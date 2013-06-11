@@ -85,6 +85,7 @@ public class Run {
 		ped.setDataProcessamento(null);
 		ped.setTotalPedido(new BigDecimal(10));
 		ip.setProduto(p);
+		ip.setPedido(ped);
 		ip.setPrecoUnitario(new BigDecimal(10));
 		ip.setQuantidade(1);
 		ped.getItens().add(ip);

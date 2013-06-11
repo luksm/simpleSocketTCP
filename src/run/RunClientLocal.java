@@ -67,7 +67,7 @@ public class RunClientLocal {
 						break;
 					
 						case 3:
-							
+							tratarMenuPedidos(client, in);
 						break;
 						
 						case 9:
@@ -128,8 +128,15 @@ public class RunClientLocal {
 					c.setNome(in.readLine());
 					System.out.println("CPF: ");
 					c.setCpf(in.readLine());
-					req.incluir(c);
-					System.out.println("Cliente incluído com sucesso!");
+					try
+					{
+						req.incluir(c);
+						System.out.println("Cliente incluído com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
 				break;
 				
 				case 2:
@@ -155,8 +162,15 @@ public class RunClientLocal {
 					c.setNome(in.readLine());
 					System.out.println("CPF (" + c.getCpf() + "): ");
 					c.setCpf(in.readLine());
-					req.alterar(c);
-					System.out.println("Cliente alterado com sucesso!");
+					try
+					{
+						req.alterar(c);
+						System.out.println("Cliente alterado com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
 				break;
 			
 				case 3:
@@ -177,8 +191,15 @@ public class RunClientLocal {
 						 System.out.println("Cliente não encontrado no banco de dados!");
 						 continue;
 					}
-					req.excluir(c);
-					System.out.println("Cliente excluído com sucesso!");
+					try
+					{
+						req.excluir(c);
+						System.out.println("Cliente excluído com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
 				break;
 				
 				case 4:
@@ -292,8 +313,16 @@ public class RunClientLocal {
 						catch(Exception ex) { System.out.println("Digite um valor válido!"); }
 					}
 					p.setEstoque(estoque);
-					req.incluir(p);
-					System.out.println("Produto incluído com sucesso!");
+					try
+					{
+						req.incluir(p);
+						System.out.println("Produto incluído com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
+					
 				break;
 				//alteração
 				case 2:
@@ -341,8 +370,15 @@ public class RunClientLocal {
 						catch(Exception ex) { System.out.println("Digite um valor válido!"); }
 					}
 					p.setEstoque(estoque);
-					req.alterar(p);
-					System.out.println("Produto alterado com sucesso!");
+					try
+					{
+						req.alterar(p);
+						System.out.println("Produto alterado com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
 				break;
 			
 				case 3:
@@ -363,8 +399,15 @@ public class RunClientLocal {
 						 System.out.println("Produto não encontrado no banco de dados!");
 						 continue;
 					}
-					req.excluir(p);
-					System.out.println("Produto excluído com sucesso!");
+					try
+					{
+						req.excluir(p);
+						System.out.println("Produto excluído com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
 				break;
 				
 				case 4:
@@ -399,6 +442,158 @@ public class RunClientLocal {
 					{
 						System.out.println(prod.toString());
 					}
+				break;
+				
+				case 9:
+					
+				break;
+				
+				default:
+					System.out.println("Comando inválido!");
+				break;
+			}
+		}while(opcao != 9);
+	}
+	
+	private static void tratarMenuPedidos(SimpleClient client, BufferedReader in) throws NotImplementedException, InterruptedException, TimeoutException, Exception
+	{
+		ServerRequest<Pedido> reqPed = new ServerRequest<Pedido>(client);
+		ServerRequest<Cliente> reqCli = new ServerRequest<Cliente>(client);
+		ServerRequest<Produto> reqProd = new ServerRequest<Produto>(client);
+		int opcao = 0;
+		int opcao2 = 0;
+		Pedido p = null;
+		Cliente cliente = null;
+		Produto produto = null;
+		ItemPedido item = null;
+		HashSet<Pedido> pedidos = null;
+		BigDecimal bigDecimal = null;
+		Integer integer = null;
+		long id;
+		
+		do
+		{
+			System.out.println("Selecione uma operação:");
+			System.out.println("1. Novo Pedido");
+			System.out.println("2. Alterar Pedido");
+			System.out.println("3. Excluir Pedido");
+			System.out.println("4. Consultar produto pelo código");
+			System.out.println("5. Consultar produto pelo cliente");
+			System.out.println("9. Voltar");
+			try
+			{
+				opcao = Short.parseShort(in.readLine());
+			}
+			catch(Exception ex) { System.out.println("Comando inválido!"); continue; }
+			
+			switch(opcao)
+			{
+				//inclusão
+				case 1:
+					System.out.println("Informe os dados do produto:");
+					p = new Pedido();
+					p.setDataEmissao(Calendar.getInstance().getTime());
+					p.setDataProcessamento(null);
+					//cliente
+					id = 0;
+					do{
+						System.out.println("Informe o ID do cliente do pedido: ");
+						try
+						{
+							id = Long.parseLong(in.readLine());
+							cliente = reqCli.buscarPeloId(id, "cliente");
+						}
+						catch(Exception e) { System.out.println("Digite um ID válido!"); }
+					}while(id == 0);
+					if(cliente == null)
+					{
+						System.out.println("Cliente não encontrado no banco de dados!");
+						break;
+					}
+					p.setCliente(cliente);
+					//adiciona os itens do pedido
+					do
+					{
+						//produto
+						item = new ItemPedido();
+						id = 0;
+						do{
+							System.out.println("Informe o ID do produto: ");
+							try
+							{
+								id = Long.parseLong(in.readLine());
+								produto = reqProd.buscarPeloId(id, "produto");
+							}
+							catch(Exception e) { System.out.println("Digite um ID válido!"); }
+						}while(id == 0);
+						if(produto == null)
+						{
+							System.out.println("Produto não encontrado no banco de dados!");
+							continue;
+						}
+						item.setProduto(produto);
+						item.setPrecoUnitario(produto.getPreco());
+						//quantidade
+						integer = 0;
+						do{
+							System.out.println("Informe a quantidade de itens: ");
+							try
+							{
+								integer = Integer.parseInt(in.readLine());
+							}
+							catch(Exception e) { System.out.println("Digite uma quantidade válida!"); }
+						}while(integer == 0);
+						item.setQuantidade(integer);
+						//desconto
+						bigDecimal = null;
+						do{
+							System.out.println("Informe o valor de desconto do item: ");
+							try
+							{
+								bigDecimal = new BigDecimal(in.readLine());
+							}
+							catch(Exception e) { System.out.println("Digite um valor válido!"); }
+						}while(bigDecimal == null);
+						item.setDesconto(bigDecimal);
+						p.addItem(item);
+						opcao2 = 0;
+						System.out.println("Informe 1 para inserir um novo produto ou 2 para finalizar o pedido...");
+						do
+						{
+							try
+							{
+								opcao2 = Short.parseShort(in.readLine());
+								if(opcao2 != 1 && opcao2 != 2) throw new Exception();
+							}
+							catch(Exception ex) { System.out.println("Comando inválido!"); }
+						}while(opcao == 0);
+					}while(opcao2 != 2);
+					p.calcularTotalPedido();
+					try
+					{
+						reqPed.incluir(p);
+						System.out.println("Pedido incluído com sucesso!");
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.getMessage());
+					}
+				break;
+				//alteração
+				case 2:
+					
+				break;
+			
+				case 3:
+					
+				break;
+				
+				case 4:
+					
+				break;
+					
+				case 5:
+					
 				break;
 				
 				case 9:
